@@ -32,7 +32,7 @@ public class Listeners extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        event.getJDA().getPresence().setActivity(Activity.playing("pastebin.gg in **"+event.getGuildTotalCount()+"** Servers."));
+        event.getJDA().getPresence().setActivity(Activity.playing("pastebin.gg in "+event.getGuildTotalCount()+" Servers."));
     }
 
     @Override
