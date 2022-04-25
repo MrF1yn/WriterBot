@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.http.client.utils.URIBuilder;
@@ -32,8 +34,18 @@ public class Listeners extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        event.getJDA().getPresence().setActivity(Activity.playing("pastebin.gg in "+event.getGuildTotalCount()+" Servers."));
+        event.getJDA().getPresence().setActivity(Activity.playing(" in "+event.getGuildTotalCount()+" Servers."));
     }
+    @Override
+    public void onGuildJoin(@Nonnull GuildJoinEvent event) {
+        event.getJDA().getPresence().setActivity(Activity.playing(" in "+event.getJDA().getGuilds().size()+" Servers."));
+    }
+    @Override
+    public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
+        event.getJDA().getPresence().setActivity(Activity.playing(" in "+event.getJDA().getGuilds().size()+" Servers."));
+    }
+
+
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e){
