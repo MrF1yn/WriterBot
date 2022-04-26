@@ -82,7 +82,7 @@ public class Listeners extends ListenerAdapter {
                                     + " by " + e.getAuthor().getAsMention() + ": https://paste.gg/" + json.get("id").getAsString()).queue();
                         }else {
                             e.getMessage().reply("Failed to create paste.").queue();
-                            System.out.println(response.body());
+                            System.out.println("Debug-response: "+response.body());
                         }
                     });
                 } catch (Exception ex) {
