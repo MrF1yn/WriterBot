@@ -1,26 +1,15 @@
 package dev.mrflyn.writerbot;
 
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import dev.mrflyn.writerbot.pasteapi.Paste;
-import dev.mrflyn.writerbot.pasteapi.PasteFile;
-import dev.mrflyn.writerbot.pasteapi.PasteFileContent;
-import org.apache.http.client.utils.URIBuilder;
 
-import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.InputStream;
 
 import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+
 import java.util.Base64;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+
 
 public class Main {
     public static void main(String[] args) throws URISyntaxException {
