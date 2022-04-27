@@ -1,11 +1,11 @@
 ![Logo](https://i.imgur.com/C4Ef8fT.png)
 # WriterBot
-# Description
+## Description
 A simple paste bot written in java.\
 This bot uploads all kinds of text files sent in the channels to https://paste.gg and provides you with the link of the paste.\
 
 The bot is globally hosted on https://railway.app. But since its open source you can compile it and host it on your own.\
-# Environment Variables\
+# Environment Variables
 The bot needs certain environment variables to work.\
 \
 DC_BOT_TOKEN - The discord bot token.\
