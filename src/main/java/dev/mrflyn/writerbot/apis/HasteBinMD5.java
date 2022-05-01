@@ -40,7 +40,7 @@ public class HasteBinMD5 implements ApiInterface{
     public String getLink(HttpResponse<String> response) {
         if(response.statusCode()!=success())return null;
         String key = JsonParser.parseString(response.body()).getAsJsonObject().get("key").getAsString();
-        return  "https://paste.md-5.net/" + key
+        return  "https://paste.md-5.net/" + key;
     }
 
     @Override
