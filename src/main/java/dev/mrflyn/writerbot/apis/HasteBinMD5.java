@@ -25,7 +25,10 @@ public class HasteBinMD5 implements ApiInterface{
     @Override
     public HttpRequest post(InputStream stream, String attachmentName, User author) throws URISyntaxException {
         return HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(Main.streamToString(stream), StandardCharsets.UTF_8))
+                .POST(HttpRequest.BodyPublishers.ofString(
+                        "//Content By " + author.getAsTag() + " (" + author.getId() + ")\r\n"+
+                                "//Made with WriterBot. Join at https://discord.vectlabs.xyz\r\n"+
+                        Main.streamToString(stream), StandardCharsets.UTF_8))
                 .header("content-type", "text/plain")
                 .uri(uri.build())
                 .build();
