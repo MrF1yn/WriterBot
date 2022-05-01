@@ -1,0 +1,10 @@
+#Environment Variables
+#MySQL Only
+DC_BOT_TOKEN: "Enter Discord Bot Token Here"
+PASTEGG_API_KEY: "Enter Paste.gg Api key here."
+DB_HOST: "Enter database host"
+DB_DATABASE: "Enter database name"
+DB_USERNAME: "Enter database username"
+DB_PASSWORD: "Enter database password"
+DB_TABLE: "Enter database table"
+DB_PORT: "Enter database port"

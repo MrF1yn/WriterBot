@@ -1,0 +1,16 @@
+dev\mrflyn\writerbot\apis\HelpChat.class
+dev\mrflyn\writerbot\apis\pasteggapi\Paste.class
+dev\mrflyn\writerbot\apis\PasteGG.class
+dev\mrflyn\writerbot\apis\HasteBinMD5.class
+dev\mrflyn\writerbot\Database\MySQL.class
+dev\mrflyn\writerbot\apis\API.class
+dev\mrflyn\writerbot\apis\pasteggapi\PasteFileContent.class
+dev\mrflyn\writerbot\apis\pasteggapi\PasteFile.class
+dev\mrflyn\writerbot\apis\HasteBin.class
+dev\mrflyn\writerbot\Listeners.class
+dev\mrflyn\writerbot\SpigotMain.class
+dev\mrflyn\writerbot\Bot.class
+dev\mrflyn\writerbot\Database\GuildConfigCache.class
+dev\mrflyn\writerbot\Main.class
+dev\mrflyn\writerbot\apis\ApiInterface.class
+dev\mrflyn\writerbot\Database\Updater.class
