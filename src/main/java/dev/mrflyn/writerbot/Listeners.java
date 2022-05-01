@@ -1,32 +1,36 @@
 package dev.mrflyn.writerbot;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.mrflyn.writerbot.pasteapi.Paste;
-import dev.mrflyn.writerbot.pasteapi.PasteFile;
-import dev.mrflyn.writerbot.pasteapi.PasteFileContent;
-import net.dv8tion.jda.api.MessageBuilder;
+import dev.mrflyn.writerbot.Database.GuildConfigCache;
+import dev.mrflyn.writerbot.Database.Updater;
+import dev.mrflyn.writerbot.apis.API;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.apache.http.client.utils.URIBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Base64;
-import java.util.List;
+import java.util.Timer;
 
 public class Listeners extends ListenerAdapter {
-    URIBuilder uri = new URIBuilder("https://api.paste.gg/v1/pastes");
+//    URIBuilder uri = new URIBuilder("https://api.paste.gg/v1/pastes");
+    URIBuilder uri = new URIBuilder("https://paste.helpch.at/documents");
     Gson gson = new Gson();
 
     public Listeners() throws URISyntaxException {
@@ -35,10 +39,70 @@ public class Listeners extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         event.getJDA().getPresence().setActivity(Activity.playing(" in "+event.getGuildTotalCount()+" Servers."));
+        GuildConfigCache.loadAllCaches();
+        Timer t = new Timer("Timer");
+        t.schedule(new Updater(), 300000L,300000L);
+
+        Bot.jda.upsertCommand("activatedapi","Choose which paste service to use for this current server.")
+                .addOptions(
+                        new OptionData(OptionType.STRING,
+                                "service-name",
+                                "Names of supported services.",
+                                true)
+                                .addChoice("Official-HasteBin", "HASTE_BIN")
+                                .addChoice("HasteBin-byMD5", "HASTE_BIN_MD5")
+                                .addChoice("HelpChat", "HELP_CHAT")
+                                .addChoice("Paste.gg","PASTE_GG")
+                ).queue();
+        Bot.jda.upsertCommand("failsilently", "bot will not give a error message when it fails to create a paste.")
+                .addOption(OptionType.BOOLEAN, "boolean", "True or False", true).queue();
+        Bot.jda.upsertCommand("autodelete", "bot will delete the attachment sent by the user after it successfully uploads to a " +
+                        "paste service.")
+                .addOption(OptionType.BOOLEAN, "boolean", "True or False", true).queue();
+        Bot.jda.updateCommands();
+
     }
+
+    @Override
+    public void onGuildReady(GuildReadyEvent event){
+
+    }
+
+    @Override
+    public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {
+        if(event.getGuild()==null)return;
+        if (event.getMember()==null)return;
+        if(!event.getMember().hasPermission(Permission.ADMINISTRATOR))return;
+        GuildConfigCache cache = GuildConfigCache.loadedCaches.get(event.getGuild().getIdLong());
+        switch (event.getName()){
+            case "activateaApi":
+                String option = event.getOptions().get(0).getAsString();
+                if(!API.getAllApis().contains(option)){
+                    event.reply("Invalid Service-Name.").setEphemeral(true).queue();
+                    return;
+                }
+                cache.setActivatedApi(API.valueOf(option));
+                event.reply("Successfully set Service to: "+option+".").queue();
+                break;
+            case "failsilently":
+                boolean fs = event.getOptions().get(0).getAsBoolean();
+                cache.setFailSilently(fs);
+                event.reply("Successfully set Fail-Silently to: "+fs+".").queue();
+                break;
+            case "autodelete":
+                boolean ad = event.getOptions().get(0).getAsBoolean();
+                cache.setAutoDelete(ad);
+                event.reply("Successfully set Auto-Delete to: "+ad+".").queue();
+                break;
+
+        }
+
+    }
+
     @Override
     public void onGuildJoin(@Nonnull GuildJoinEvent event) {
         event.getJDA().getPresence().setActivity(Activity.playing(" in "+event.getJDA().getGuilds().size()+" Servers."));
+        GuildConfigCache.onGuildJoin(event.getGuild().getIdLong());
     }
     @Override
     public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
@@ -50,39 +114,40 @@ public class Listeners extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent e){
         if (e.getAuthor().getId().equals(Bot.jda.getSelfUser().getId())) return;
+        GuildConfigCache cache = GuildConfigCache.loadedCaches.get(e.getGuild().getIdLong());
         for (Message.Attachment attachment : e.getMessage().getAttachments()) {
             if (attachment.isImage() || attachment.isVideo() || attachment.isSpoiler()) continue;
             attachment.retrieveInputStream().thenAccept(stream -> {
 //                System.out.println(Main.encodeStreamToBase64(stream));
-                Paste file = new Paste(
-                        "Content By "+e.getAuthor().getAsTag()+" ("+e.getAuthor().getId()+")",
-                        "Made with WriterBot. Join at https://discord.vectlabs.xyz",
-                        "unlisted",
-                        List.of(new PasteFile(attachment.getFileName(),
-                                new PasteFileContent(
-                                        "text",
-                                        "null",
-                                        Main.streamToString(stream)
-                                )))
-                );
+//                Paste file = new Paste(
+//                        "Content By "+e.getAuthor().getAsTag()+" ("+e.getAuthor().getId()+")",
+//                        "Made with WriterBot. Join at https://discord.vectlabs.xyz",
+//                        "unlisted",
+//                        List.of(new PasteFile(attachment.getFileName(),
+//                                new PasteFileContent(
+//                                        "text",
+//                                        "null",
+//                                        Main.streamToString(stream)
+//                                )))
+//                );
+//                System.out.println(gson.toJson(file));
                 try {
                     HttpClient client = HttpClient.newHttpClient();
-                    client.sendAsync(
-                            HttpRequest.newBuilder()
-                                    .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(file)))
-                                    .header("content-type", "application/json")
-                                    .header("Authorization", "Key "+System.getenv("API_KEY"))
-                                    .uri(uri.build())
-                                    .build(),
+                    client.sendAsync(cache.getActivatedApi().getWrapper().post(stream, attachment.getFileName(), e.getAuthor()),
                             HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-//                        System.out.println(response.body());
-                        if (response.statusCode() == 201) {
-                            JsonObject json = JsonParser.parseString(response.body()).getAsJsonObject().get("result").getAsJsonObject();
+
+                        System.out.println(response.body());
+
+                        if (response.statusCode() == cache.getActivatedApi().getWrapper().success()) {
+                            if(cache.isAutoDelete())
+                                e.getMessage().editMessage(e.getMessage().getContentRaw()).queue();
                             e.getMessage().reply(attachment.getFileName()
-                                    + " by " + e.getAuthor().getAsMention() + ": https://paste.gg/" + json.get("id").getAsString()).queue();
-                        }else {
-                            e.getMessage().reply("Failed to create paste.").queue();
-                            System.out.println("Debug-response-json: "+response.body());
+                                    + " by " + e.getAuthor().getAsMention() + ":  " + cache.getActivatedApi().getWrapper().getLink(response)).queue();
+
+                        } else {
+                            if (!cache.isFailSilently())
+                                e.getMessage().reply("Failed to create paste.").queue();
+                            System.out.println("Debug-response-json: " + response.body());
                         }
                     });
                 } catch (Exception ex) {
