@@ -15,7 +15,7 @@ The bot is globally hosted on https://railway.app. But since its open source you
 The bot needs certain environment variables to work.\
 \
 DC_BOT_TOKEN - The discord bot token.\
-PASTEGG_API_KEY - The api key of your account at https://paste.gg.\
+PASTEGG_API_KEY - The api key of your account at https://paste.gg.
 DB_HOST - The host url of the mysql database.\
 DB_DATABASE - The database name of the mysql database.\
 DB_USERNAME - The username of the mysql database.\
