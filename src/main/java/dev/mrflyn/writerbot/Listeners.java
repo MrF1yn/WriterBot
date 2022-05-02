@@ -56,7 +56,7 @@ public class Listeners extends ListenerAdapter {
         if(!event.getMember().hasPermission(Permission.ADMINISTRATOR))return;
         GuildConfigCache cache = GuildConfigCache.loadedCaches.get(event.getGuild().getIdLong());
         switch (event.getName()){
-            case "activateaApi":
+            case "activatedapi":
                 String option = event.getOptions().get(0).getAsString();
                 if(!API.getAllApis().contains(option)){
                     event.reply("Invalid Service-Name.").setEphemeral(true).queue();
