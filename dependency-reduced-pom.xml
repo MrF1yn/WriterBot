@@ -60,6 +60,18 @@
       <version>1.18.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.29</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.dv8tion</groupId>
+      <artifactId>JDA</artifactId>
+      <version>5.0.0-alpha.10</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
