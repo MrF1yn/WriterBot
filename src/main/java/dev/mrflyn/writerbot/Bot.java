@@ -52,6 +52,5 @@ public class Bot {
         jda.upsertCommand("autodelete", "bot will delete the attachment sent by the user after it successfully uploads to a " +
                         "paste service.")
                 .addOption(OptionType.BOOLEAN, "boolean", "True or False", true).queue();
-        jda.updateCommands().queue();
     }
 }
