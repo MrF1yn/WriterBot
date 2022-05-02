@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import dev.mrflyn.writerbot.Database.GuildConfigCache;
 import dev.mrflyn.writerbot.Database.Updater;
 import dev.mrflyn.writerbot.apis.API;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -96,22 +97,12 @@ public class Listeners extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent e){
         if (e.getAuthor().getId().equals(Bot.jda.getSelfUser().getId())) return;
         GuildConfigCache cache = GuildConfigCache.loadedCaches.get(e.getGuild().getIdLong());
+        boolean delete = false;
         for (Message.Attachment attachment : e.getMessage().getAttachments()) {
-            if (attachment.isImage() || attachment.isVideo() || attachment.isSpoiler()) continue;
+            if (attachment.isImage() || attachment.isVideo() || attachment.isSpoiler())
+                continue;
+            delete = true;
             attachment.retrieveInputStream().thenAccept(stream -> {
-//                System.out.println(Main.encodeStreamToBase64(stream));
-//                Paste file = new Paste(
-//                        "Content By "+e.getAuthor().getAsTag()+" ("+e.getAuthor().getId()+")",
-//                        "Made with WriterBot. Join at https://discord.vectlabs.xyz",
-//                        "unlisted",
-//                        List.of(new PasteFile(attachment.getFileName(),
-//                                new PasteFileContent(
-//                                        "text",
-//                                        "null",
-//                                        Main.streamToString(stream)
-//                                )))
-//                );
-//                System.out.println(gson.toJson(file));
                 try {
                     HttpClient client = HttpClient.newHttpClient();
                     client.sendAsync(cache.getActivatedApi().getWrapper().post(stream, attachment.getFileName(), e.getAuthor()),
@@ -120,8 +111,6 @@ public class Listeners extends ListenerAdapter {
                         System.out.println(response.body());
 
                         if (response.statusCode() == cache.getActivatedApi().getWrapper().success()) {
-                            if(cache.isAutoDelete())
-                                e.getMessage().editMessage(e.getMessage().getContentRaw()).queue();
                             e.getMessage().reply(attachment.getFileName()
                                     + " by " + e.getAuthor().getAsMention() + ":  " + cache.getActivatedApi().getWrapper().getLink(response)).queue();
 
@@ -135,6 +124,9 @@ public class Listeners extends ListenerAdapter {
                     ex.printStackTrace();
                 }
             });
+        }
+        if(cache.isAutoDelete()&&delete) {
+            e.getMessage().delete().queue();
         }
     }
 

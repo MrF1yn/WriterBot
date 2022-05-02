@@ -42,11 +42,11 @@ public class PasteGG implements ApiInterface{
                                 Main.streamToString(stream)
                         )))
         );
-//        System.out.println(gson.toJson(file));
+        System.out.println(gson.toJson(file));
         return HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(file).toString(), StandardCharsets.UTF_8))
                 .header("content-type", "application/json")
-                .header("Authorization", "Key "+System.getenv("API_KEY"))
+                .header("Authorization", "Key "+Main.envVariables[1])
                 .uri(uri.build())
                 .build();
     }
@@ -59,7 +59,7 @@ public class PasteGG implements ApiInterface{
     @Override
     public String getLink(HttpResponse<String> response) {
         if(response.statusCode()!=success())return null;
-        String key = JsonParser.parseString(response.body()).getAsJsonObject().get("result").getAsString();
+        String key = JsonParser.parseString(response.body()).getAsJsonObject().get("result").getAsJsonObject().get("id").getAsString();
         return  "https://paste.gg/" + key;
     }
 

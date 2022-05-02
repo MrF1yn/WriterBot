@@ -2,9 +2,13 @@ package dev.mrflyn.writerbot;
 
 
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.mrflyn.writerbot.apis.API;
+import dev.mrflyn.writerbot.apis.pasteggapi.Paste;
+import dev.mrflyn.writerbot.apis.pasteggapi.PasteFile;
+import dev.mrflyn.writerbot.apis.pasteggapi.PasteFileContent;
 import org.apache.http.client.utils.URIBuilder;
 
 import java.io.IOException;
