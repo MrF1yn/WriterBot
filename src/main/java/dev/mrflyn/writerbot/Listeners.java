@@ -63,17 +63,26 @@ public class Listeners extends ListenerAdapter {
                     event.reply("Invalid Service-Name.").setEphemeral(true).queue();
                     return;
                 }
-                cache.setActivatedApi(API.valueOf(option));
+                if(cache.getActivatedApi() != API.valueOf(option)){
+                    cache.setActivatedApi(API.valueOf(option));
+                    cache.setChanged(true);
+                }
                 event.reply("Successfully set Service to: "+option+".").queue();
                 break;
             case "failsilently":
                 boolean fs = event.getOptions().get(0).getAsBoolean();
-                cache.setFailSilently(fs);
+                if(cache.isFailSilently() != fs){
+                    cache.setFailSilently(fs);
+                    cache.setChanged(true);
+                }
                 event.reply("Successfully set Fail-Silently to: "+fs+".").queue();
                 break;
             case "autodelete":
                 boolean ad = event.getOptions().get(0).getAsBoolean();
-                cache.setAutoDelete(ad);
+                if(cache.isAutoDelete() != ad){
+                    cache.setAutoDelete(ad);
+                    cache.setChanged(true);
+                }
                 event.reply("Successfully set Auto-Delete to: "+ad+".").queue();
                 break;
 

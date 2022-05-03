@@ -9,7 +9,8 @@ public class Updater extends TimerTask {
     public void run(){
         lock.lock();
         for(GuildConfigCache cache : GuildConfigCache.loadedCaches.values()){
-            Main.bot.database.update(cache);
+            if(cache.isChanged())
+                Main.bot.database.update(cache);
         }
         lock.unlock();
         System.out.println("Database updated.");
