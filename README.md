@@ -15,7 +15,7 @@ The bot is globally hosted on https://railway.app. But since its open source you
 The bot needs certain environment variables to work.\
 \
 DC_BOT_TOKEN - The discord bot token.\
-PASTEGG_API_KEY - The api key of your account at https://paste.gg.\
+PASTEGG_API_KEY - The api key of your account at https://paste.gg.
 DB_HOST - The host url of the mysql database.\
 DB_DATABASE - The database name of the mysql database.\
 DB_USERNAME - The username of the mysql database.\
@@ -23,22 +23,22 @@ DB_PASSWORD - The password url of the mysql database.\
 DB_TABLE - The table name url of the mysql database(it will create one with the name).\
 DB_PORT - The port of the mysql database.
 
-#Commands
-##/activatedapi [NameOfThePasteService]
+# Commands
+## /activatedapi [NameOfThePasteService]
 Choose your prefered paste service for your discord server.
-###AvailableOptions:
+### AvailableOptions:
 Paste.gg - https://paste.gg \
 HelpChat (default) - https://paste.helpch.at \
 HasteBin-byMD5 - https://paste.md-5.net \
 Official-HasteBin - https://www.toptal.com/developers/hastebin/
 
-##/failsilently [Boolean]
-###AvailableOptions:
+## /failsilently [Boolean]
+### AvailableOptions:
 True - The bot will not display an error message when it fails to create a paste.\
 False - The bot will display an error message when it fails to create a paste.
 
-##/autodelete [Boolean]
-###AvailableOptions:
+## /autodelete [Boolean]
+### AvailableOptions:
 True - The bot will delete the attachment after it successfully uploads it to a paste service.\
 False (default) - The bot will not delete the attachment after it successfully uploads it to a paste service.
 
