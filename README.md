@@ -42,6 +42,3 @@ False - The bot will display an error message when it fails to create a paste.
 True - The bot will delete the attachment after it successfully uploads it to a paste service.\
 False (default) - The bot will not delete the attachment after it successfully uploads it to a paste service.
 
-
-
-
