@@ -19,8 +19,8 @@ PASTEGG_API_KEY - The api key of your account at https://paste.gg.
 DB_HOST - The host url of the mysql database.\
 DB_DATABASE - The database name of the mysql database.\
 DB_USERNAME - The username of the mysql database.\
-DB_PASSWORD - The password url of the mysql database.\
-DB_TABLE - The table name url of the mysql database(it will create one with the name).\
+DB_PASSWORD - The password of the mysql database.\
+DB_TABLE - The table name of the mysql database(it will create one with the name).\
 DB_PORT - The port of the mysql database.
 
 # Commands
@@ -41,6 +41,11 @@ False - The bot will display an error message when it fails to create a paste.
 ### AvailableOptions:
 True - The bot will delete the attachment after it successfully uploads it to a paste service.\
 False (default) - The bot will not delete the attachment after it successfully uploads it to a paste service.
+
+## /codeblockupload [Boolean]
+### AvailableOptions:
+True - The bot will upload codeblocks to a paste service.\
+False (default) - The bot will not upload codeblocks to a paste service.
 
 
 

@@ -28,11 +28,16 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.Timer;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Listeners extends ListenerAdapter {
 //    URIBuilder uri = new URIBuilder("https://api.paste.gg/v1/pastes");
     URIBuilder uri = new URIBuilder("https://paste.helpch.at/documents");
     Gson gson = new Gson();
+    Pattern codeBlock = Pattern.compile("```(.+?)```", Pattern.DOTALL);
+    Pattern codeLang = Pattern.compile("```(.+?)\n", Pattern.DOTALL);
 
     public Listeners() throws URISyntaxException {
     }
@@ -85,6 +90,14 @@ public class Listeners extends ListenerAdapter {
                 }
                 event.reply("Successfully set Auto-Delete to: "+ad+".").queue();
                 break;
+            case "codeblockupload":
+                boolean cdu = event.getOptions().get(0).getAsBoolean();
+                if (cache.isCodeBlockUpload() != cdu) {
+                    cache.setCodeBlockUpload(cdu);
+                    cache.setChanged(true);
+                }
+                event.reply("Successfully set CodeBlock-Upload to: " + cdu + ".").queue();
+                break;
 
         }
 
@@ -107,8 +120,48 @@ public class Listeners extends ListenerAdapter {
         if (e.getAuthor().getId().equals(Bot.jda.getSelfUser().getId())) return;
         GuildConfigCache cache = GuildConfigCache.loadedCaches.get(e.getGuild().getIdLong());
         boolean delete = false;
+        if(cache.isCodeBlockUpload()) {
+//            System.out.println(e.getMessage().getContentRaw());
+            String raw = e.getMessage().getContentRaw();
+            Matcher matcher = codeBlock.matcher(raw);
+            while (matcher.find()){
+                String s = matcher.group();
+                s = s.replace("```","");
+//                System.out.println(s);
+                Matcher langMatcher = codeLang.matcher(s);
+                langMatcher.find();
+                String tempLang = langMatcher.group().replace("```","").split(" ")[0];
+//                System.out.println(tempLang);
+                if(tempLang == null||tempLang.equals("")||tempLang.equals(" ")){
+                    tempLang = "txt";
+                }
+                final String lang = tempLang;
+                try {
+                    HttpClient client = HttpClient.newHttpClient();
+                    client.sendAsync(cache.getActivatedApi().getWrapper().post(s, "CodeBlockSnippet."+lang, e.getAuthor()),
+                            HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
+
+                        System.out.println(response.body());
+
+                        if (response.statusCode() == cache.getActivatedApi().getWrapper().success()) {
+                            e.getMessage().reply("CodeBlockSnippet."+lang
+                                    + " by " + e.getAuthor().getAsMention() + ":  " + cache.getActivatedApi().getWrapper().getLink(response)).queue();
+
+                        } else {
+                            if (!cache.isFailSilently())
+                                e.getMessage().reply("Failed to create paste.").queue();
+                            System.out.println("Debug-response-json: " + response.body());
+                        }
+                    });
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
         for (Message.Attachment attachment : e.getMessage().getAttachments()) {
-            if (attachment.isImage() || attachment.isVideo() || attachment.isSpoiler())
+            if (attachment.isImage() || attachment.isVideo() || attachment.isSpoiler()|| attachment.getFileName().endsWith(".jar")
+            || attachment.getFileName().endsWith(".exe"))
                 continue;
             delete = true;
             attachment.retrieveInputStream().thenAccept(stream -> {

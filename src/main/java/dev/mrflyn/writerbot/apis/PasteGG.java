@@ -52,6 +52,28 @@ public class PasteGG implements ApiInterface{
     }
 
     @Override
+    public HttpRequest post(String stream, String attachmentName, User author) throws URISyntaxException {
+        Paste file = new Paste(
+                "Content By " + author.getAsTag() + " (" + author.getId() + ")",
+                "Made with WriterBot. Join at https://discord.vectlabs.xyz",
+                "unlisted",
+                List.of(new PasteFile(attachmentName,
+                        new PasteFileContent(
+                                "text",
+                                "null",
+                                stream
+                        )))
+        );
+        System.out.println(gson.toJson(file));
+        return HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(file).toString(), StandardCharsets.UTF_8))
+                .header("content-type", "application/json")
+                .header("Authorization", "Key " + Main.envVariables[1])
+                .uri(uri.build())
+                .build();
+    }
+
+    @Override
     public int success() {
         return 201;
     }

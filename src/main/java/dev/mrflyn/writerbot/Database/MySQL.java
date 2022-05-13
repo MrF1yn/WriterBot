@@ -30,6 +30,9 @@ public class MySQL {
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS "+this.table+" (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                         "GUILD_ID BIGINT(255), ACTIVATED_API varchar(200) DEFAULT 'HELP_CHAT', AUTO_DELETE BOOLEAN DEFAULT false, " +
                         "FAIL_SILENTLY BOOLEAN DEFAULT false)");
+
+                statement = getConnection().createStatement();
+                statement.executeUpdate("ALTER TABLE "+this.table+" ADD COLUMN CODEBLOCK_UPLOAD BOOLEAN DEFAULT false");
                 System.out.println("database connection successful.");
 
             }
@@ -82,11 +85,12 @@ public class MySQL {
     public void update(GuildConfigCache cache) {
         try {
             PreparedStatement statement = getConnection()
-                    .prepareStatement("UPDATE " + this.table + " SET ACTIVATED_API=?,AUTO_DELETE=?,FAIL_SILENTLY=? WHERE GUILD_ID=?");
+                    .prepareStatement("UPDATE " + this.table + " SET ACTIVATED_API=?,AUTO_DELETE=?,FAIL_SILENTLY=?,CODEBLOCK_UPLOAD=? WHERE GUILD_ID=?");
             statement.setString(1, cache.getActivatedApi().name());
             statement.setBoolean(2, cache.isAutoDelete());
             statement.setBoolean(3, cache.isFailSilently());
-            statement.setLong(4, cache.getGuildId());
+            statement.setBoolean(4, cache.isCodeBlockUpload());
+            statement.setLong(5, cache.getGuildId());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -105,7 +109,8 @@ public class MySQL {
                         id,
                         API.valueOf(results.getString("ACTIVATED_API")),
                         results.getBoolean("AUTO_DELETE"),
-                        results.getBoolean("FAIL_SILENTLY")
+                        results.getBoolean("FAIL_SILENTLY"),
+                        results.getBoolean("CODEBLOCK_UPLOAD")
                 );
                 return cache;
             }

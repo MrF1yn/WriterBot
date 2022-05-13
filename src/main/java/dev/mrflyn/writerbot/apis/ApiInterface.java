@@ -10,6 +10,7 @@ import java.net.http.HttpResponse;
 public interface ApiInterface {
 
     HttpRequest post(InputStream stream, String attachmentName, User author) throws URISyntaxException;
+    HttpRequest post(String stream, String attachmentName, User author) throws URISyntaxException;
 
     int success();
 

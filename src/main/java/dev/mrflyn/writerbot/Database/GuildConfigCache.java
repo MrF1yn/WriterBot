@@ -32,14 +32,16 @@ public class GuildConfigCache {
     private Long guildId;
     private API activatedApi;
     private boolean autoDelete;
+    private boolean codeBlockUpload;
     private boolean failSilently;
     private boolean changed;
 
-    public GuildConfigCache(Long guildId, API activatedApi, boolean autoDelete, boolean failSilently){
+    public GuildConfigCache(Long guildId, API activatedApi, boolean autoDelete, boolean failSilently, boolean codeBlockUpload){
         this.activatedApi = activatedApi;
         this.guildId = guildId;
         this.autoDelete = autoDelete;
         this.failSilently = failSilently;
+        this.codeBlockUpload = codeBlockUpload;
         changed = false;
     }
 
@@ -48,6 +50,7 @@ public class GuildConfigCache {
         this.guildId = guildId;
         this.autoDelete = false;
         this.failSilently = false;
+        this.codeBlockUpload = false;
         changed = true;
     }
 
@@ -89,5 +92,13 @@ public class GuildConfigCache {
 
     public void setChanged(boolean changed) {
         this.changed = changed;
+    }
+
+    public boolean isCodeBlockUpload() {
+        return codeBlockUpload;
+    }
+
+    public void setCodeBlockUpload(boolean codeBlockUpload) {
+        this.codeBlockUpload = codeBlockUpload;
     }
 }
