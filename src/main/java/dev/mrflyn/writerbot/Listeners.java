@@ -37,7 +37,7 @@ public class Listeners extends ListenerAdapter {
     URIBuilder uri = new URIBuilder("https://paste.helpch.at/documents");
     Gson gson = new Gson();
     Pattern codeBlock = Pattern.compile("```(.+?)```", Pattern.DOTALL);
-    Pattern codeLang = Pattern.compile("```(.+?)\n", Pattern.DOTALL);
+    Pattern codeLang = Pattern.compile("```(.+?)\n");
 
     public Listeners() throws URISyntaxException {
     }
@@ -126,7 +126,6 @@ public class Listeners extends ListenerAdapter {
             Matcher matcher = codeBlock.matcher(raw);
             while (matcher.find()){
                 String s = matcher.group();
-                s = s.replace("```","");
 //                System.out.println(s);
                 Matcher langMatcher = codeLang.matcher(s);
                 langMatcher.find();
@@ -136,6 +135,7 @@ public class Listeners extends ListenerAdapter {
                     tempLang = "txt";
                 }
                 final String lang = tempLang;
+                s = s.replace("```","");
                 try {
                     HttpClient client = HttpClient.newHttpClient();
                     client.sendAsync(cache.getActivatedApi().getWrapper().post(s, "CodeBlockSnippet."+lang, e.getAuthor()),
