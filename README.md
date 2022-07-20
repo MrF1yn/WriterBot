@@ -46,7 +46,6 @@ False (default) - The bot will not delete the attachment after it successfully u
 ### AvailableOptions:
 True - The bot will upload codeblocks to a paste service.\
 False (default) - The bot will not upload codeblocks to a paste service.
-
-
+.
 
 
